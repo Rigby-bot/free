@@ -1,150 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Mini World's Hardest Game</title>
-<style>
-    body {
-        margin: 0;
-        background: #111;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-    canvas {
-        background: #eee;
-        border: 3px solid black;
-    }
-</style>
+  <meta charset="UTF-8">
+  <title>Play Music</title>
 </head>
 <body>
 
-<canvas id="game" width="600" height="400"></canvas>
+  <h1>Play Song</h1>
 
-<script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+  <audio id="music" src="Christmas%20Kids(MP3_70K).mp3"></audio>
 
-const keys = {};
-window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
-window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+  <button onclick="playMusic()">Play</button>
+  <button onclick="pauseMusic()">Pause</button>
 
-// Player
-const player = {
-    x: 50,
-    y: 180,
-    size: 20,
-    speed: 3
-};
+  <script>
+    const music = document.getElementById("music");
 
-// Levels
-const levels = [
-    {
-        goal: { x: 540, y: 180, size: 30 },
-        enemies: [
-            { x: 150, y: 100, size: 15, vx: 2, vy: 0 },
-            { x: 300, y: 250, size: 15, vx: -2, vy: 0 }
-        ]
-    },
-    {
-        goal: { x: 540, y: 50, size: 30 },
-        enemies: [
-            { x: 200, y: 0, size: 15, vx: 0, vy: 2 },
-            { x: 350, y: 400, size: 15, vx: 0, vy: -2 },
-            { x: 100, y: 200, size: 15, vx: 2, vy: 0 }
-        ]
-    }
-];
-
-let currentLevel = 0;
-
-function resetPlayer() {
-    player.x = 50;
-    player.y = 180;
-}
-
-function rectsCollide(a, b) {
-    return (
-        a.x < b.x + b.size &&
-        a.x + a.size > b.x &&
-        a.y < b.y + b.size &&
-        a.y + a.size > b.y
-    );
-}
-
-function update() {
-    // Player movement
-    if (keys["a"]) player.x -= player.speed;
-    if (keys["d"]) player.x += player.speed;
-    if (keys["w"]) player.y -= player.speed;
-    if (keys["s"]) player.y += player.speed;
-
-    // Keep player in bounds
-    player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
-    player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
-
-    const level = levels[currentLevel];
-
-    // Move enemies
-    for (const e of level.enemies) {
-        e.x += e.vx;
-        e.y += e.vy;
-
-        // Bounce off walls
-        if (e.x <= 0 || e.x + e.size >= canvas.width) e.vx *= -1;
-        if (e.y <= 0 || e.y + e.size >= canvas.height) e.vy *= -1;
-
-        // Player hit enemy → reset
-        if (rectsCollide(player, e)) {
-            resetPlayer();
-        }
+    function playMusic() {
+      music.play();
     }
 
-    // Reach goal → next level
-    if (rectsCollide(player, level.goal)) {
-        currentLevel++;
-        if (currentLevel >= levels.length) {
-            alert("You win!");
-            currentLevel = 0;
-        }
-        resetPlayer();
+    function pauseMusic() {
+      music.pause();
     }
-}
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const level = levels[currentLevel];
-
-    // Goal
-    ctx.fillStyle = "green";
-    ctx.fillRect(level.goal.x, level.goal.y, level.goal.size, level.goal.size);
-
-    // Enemies
-    ctx.fillStyle = "blue";
-    for (const e of level.enemies) {
-        ctx.fillRect(e.x, e.y, e.size, e.size);
-    }
-
-    // Player
-    ctx.fillStyle = "red";
-    ctx.fillRect(player.x, player.y, player.size, player.size);
-
-    // Level text
-    ctx.fillStyle = "black";
-    ctx.font = "16px Arial";
-    ctx.fillText(`Level ${currentLevel + 1}`, 10, 20);
-}
-
-function loop() {
-    update();
-    draw();
-    requestAnimationFrame(loop);
-}
-
-loop();
-</script>
+  </script>
 
 </body>
 </html>
