@@ -2,27 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Play Music</title>
+  <title>Music Player</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+
+    #progress-container {
+      width: 300px;
+      height: 10px;
+      background: #ddd;
+      margin: 15px 0;
+      cursor: pointer;
+    }
+
+    #progress {
+      height: 100%;
+      width: 0%;
+      background: #4caf50;
+    }
+  </style>
 </head>
 <body>
 
-  <h1>Play Song</h1>
+  <h2>Christmas Kids</h2>
 
   <audio id="music" src="Christmas%20Kids(MP3_70K).mp3"></audio>
 
-  <button onclick="playMusic()">Play</button>
-  <button onclick="pauseMusic()">Pause</button>
+  <button id="playBtn">Play</button>
+
+  <div id="progress-container">
+    <div id="progress"></div>
+  </div>
 
   <script>
     const music = document.getElementById("music");
+    const playBtn = document.getElementById("playBtn");
+    const progressContainer = document.getElementById("progress-container");
+    const progress = document.getElementById("progress");
 
-    function playMusic() {
-      music.play();
-    }
+    playBtn.addEventListener("click", () => {
+      if (music.paused) {
+        music.play();
+        playBtn.textContent = "Pause";
+      } else {
+        music.pause();
+        playBtn.textContent = "Play";
+      }
+    });
 
-    function pauseMusic() {
-      music.pause();
-    }
+    // Update progress bar as song plays
+    music.addEventListener("timeupdate", () => {
+      const percent = (music.currentTime / music.duration) * 100;
+      progress.style.width = percent + "%";
+    });
+
+    // Click progress bar to seek
+    progressContainer.addEventListener("click", (e) => {
+      const width = progressContainer.clientWidth;
+      const clickX = e.offsetX;
+      const duration = music.duration;
+
+      music.currentTime = (clickX / width) * duration;
+    });
   </script>
 
 </body>
